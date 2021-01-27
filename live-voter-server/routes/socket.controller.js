@@ -9,12 +9,15 @@ exports.socketController = (function(){
     return socketController;
     function startListening(audience){
         socketIo.on('connection', socket => {
-            socket.on('JOIN_AUDIENCE', roomId => audience.enterStage(roomId, socket.id))
+            socket.on('JOIN_AUDIENCE', roomId => {
+                console.log('JOIN-',roomId)
+                audience.enterStage(roomId, socket.id)
+            })
             socket.on('disconnected', () => audience.leaveStage(roomId, socket.id))
         })
         require('../server').listener.on('FROM_CONTROLLER', (roomId, votes) =>{
             const roomAudience = audience.getAudience(roomId);
-            console.log(roomId, votes)
+            console.log('roomAudience-',roomAudience)
             roomAudience.forEach(participant => socketIo.to(participant).emit('NEW_VOTES', votes))
         })
     }
@@ -30,6 +33,8 @@ class Audience{
         p[participant] = participant
         const r = {};
         r[roomId] = p
+        this.roomData = {...this.roomData, ...r}
+        console.log('audience.roomData ',this.roomData)
     }
 
     enterStage(roomId, participant){

@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { formatSeconds } from '../../utils/material.modules'
 import './vote.css'
+import io from "socket.io-client";
 export function VotePoll({vote, showVote, pollData, voteStatus}) {
     const [myOption, setMyOption] = useState(-1)
     return (
@@ -42,7 +43,22 @@ export function VotePoll({vote, showVote, pollData, voteStatus}) {
     )
 }
 
-export function VoteStats({pollData, updatedPollData, goBack}){
+export function VoteStats({pollData, goBack, id}){
+    const [newPollVotes, setNewPollVotes ] = useState(null)
+    const liveFeedFailed = () => {
+        alert('Failed to connect live feed.')
+        goBack()
+    }
+    useEffect(()=>{
+        const socketEvent = io("http://localhost:8080");
+        socketEvent.on('connect_error', liveFeedFailed )
+        socketEvent.on('connect_failed', liveFeedFailed)
+        socketEvent.on('connect',() => socketEvent.emit('JOIN_AUDIENCE', id))
+        socketEvent.on('NEW_VOTES',newPollData => {
+            console.log('NEW_VOTES', newPollData)
+            setNewPollVotes(newPollData)
+        })
+    },[])
     return (
         <div className="vote-poll">
         <h1 className="poll-title">
@@ -57,14 +73,14 @@ export function VoteStats({pollData, updatedPollData, goBack}){
             </p>
             <div className="poll-votes">
                 {
-                    (Object.keys(pollData.votes) || []).map(option => {
+                    (Object.keys((newPollVotes || pollData).votes) || []).map(option => {
                         return <div className="poll-option-block">
                         <div className="poll-option--progress">
-                            <p>{option} ({pollData.votes[option]} votes)</p>
-                            {`${((pollData.votes[option]/pollData.totalVotes) * 100).toFixed(1)}%`}
+                            <p>{option} ({(newPollVotes || pollData).votes[option]} votes)</p>
+                            {`${(((newPollVotes || pollData).votes[option]/(newPollVotes || pollData).totalVotes) * 100).toFixed(1)}%`}
                         </div>
                         <div className="option-progress">
-                            <div id="option-progress" style={{width : `${((pollData.votes[option]/pollData.totalVotes) * 100).toFixed(1)}%` }}></div>
+                            <div id="option-progress" style={{width : `${(((newPollVotes || pollData).votes[option]/(newPollVotes || pollData).totalVotes) * 100).toFixed(1)}%` }}></div>
                         </div>
                     </div>
                     })
@@ -72,7 +88,7 @@ export function VoteStats({pollData, updatedPollData, goBack}){
             </div>
 
             <div className="divider"></div>
-            <div className="total-votes">Total Votes : {pollData.totalVotes}</div>
+            <div className="total-votes">Total Votes : {(newPollVotes || pollData).totalVotes}</div>
 
             <div className="poll-actions">
                 <button className="vote-btn back-btn" onClick={goBack}>Back to Vote</button>

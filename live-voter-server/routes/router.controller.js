@@ -55,7 +55,7 @@ class PollRoutes extends Utils{
             const newPoll = {};
             newPoll[req.params.id] = pollData
             await firebase.database().ref().update(newPoll);
-            require('../server').listener.emit('FROM_CONTROLLER', req.params.id, pollData.votes)
+            require('../server').listener.emit('FROM_CONTROLLER', req.params.id, pollData)
             Utils.sendResponse(res, 201, pollData, req.originalUrl)
         }catch(e){
             Utils.sendResponse(res, 500, `${e}`, req.originalUrl)

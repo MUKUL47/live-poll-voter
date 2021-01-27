@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react'
 import { useHistory } from 'react-router'
 import { defaultHeaders, LoopIcon } from '../../utils/material.modules'
 import {VotePoll, VoteStats} from './vote.render'
+import io from "socket.io-client";
 function Vote(props) {
     const [voteContext, setVoteContext] = useState({ 
         voteStat : 1, 
         pollData : null, 
         id : window.location.pathname.split('/')[2],
-        voteStatus : 'Vote'
+        voteStatus : 'Vote',
+        newPollVotes : null
     })
     const history = useHistory();
     const setContext = obj => setVoteContext({ ...voteContext,  ...obj})
@@ -53,6 +55,7 @@ function Vote(props) {
                 <VoteStats
                     pollData={voteContext.pollData}
                     goBack={() => setContext({voteStat : 1})}
+                    id={voteContext.id}
                 />
                 :<LoopIcon className='vote-loading'/>
 
