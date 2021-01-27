@@ -2,7 +2,7 @@ import React, { useState, useEffect, createRef, useRef } from 'react'
 import { CheckCircleIcon } from '../../utils/material.modules'
 import './create.css'
 function CreateRender({ submit, loading, resetCreateForm }) {
-    const [form, setForm] = useState({ title : '', description : '', options : ['', ''] })
+    const [form, setForm] = useState({ title : '', description : '', options : ['', ''], voteType : 'IP' })
     useEffect(() => {
         setForm({ title : '', description : '', options : ['', ''] })
     },[resetCreateForm])
@@ -90,6 +90,18 @@ function CreateRender({ submit, loading, resetCreateForm }) {
                             })
                         }
                     
+                </div>
+
+                <div className="create_poll-inp">
+                    <div className="poll-inp--header">
+                       Vote Settings
+                    </div>
+                    <div className="pol-inp--val">
+                        <select name="" id="" className="standard-inp" onChange={e => setForm({ ...form, voteType :e.target.value })}>
+                            <option value="IP">Unique IP</option>
+                            <option value="COOKIE">Unique Browser session</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div className="create-pol-submit">

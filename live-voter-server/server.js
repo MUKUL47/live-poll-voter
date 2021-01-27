@@ -9,6 +9,7 @@ const path = require('path');
 app.use(express.static(path.join(__dirname, './')));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(require('cookie-parser')());
 app.use(routes);
 const io = require('socket.io').listen(app.listen(8080))
 require('./routes/socket.controller').socketController(io)

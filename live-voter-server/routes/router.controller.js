@@ -12,11 +12,22 @@ class Utils{
     static getRandomNumber(min, max){
         return Math.floor(Math.random() * (max - min) + min)
     }
+    static getIp(){
+        return new Promise((resolve, reject) => {
+            require('request').get('https://ipinfo.io', (err, resp, body) => {
+                if(err) {
+                    reject(err)
+                    return
+                }
+                resolve(JSON.parse(body)['ip'])
+            })
+        })
+    }
 }
 class PollRoutes extends Utils{
     static async createPoll(req, res){
         try{
-            const { title, description, options } = req.body;
+            const { title, description, options, voteType } = req.body;
             console.log(req.body)
             if(!title || !options){
                return Utils.sendResponse(res, 404, 'Title or options are missing', req.originalUrl)
@@ -34,7 +45,9 @@ class PollRoutes extends Utils{
                 options : options,
                 votes : votes,
                 totalVotes : 0,
-                createdAt : new Date().valueOf()
+                createdAt : new Date().valueOf(),
+                voteType : voteType || 'IP',
+                voters : {}
             };
             await firebase.database().ref().update(obj);
             Utils.sendResponse(res, 201, pollId, req.originalUrl)
@@ -42,13 +55,27 @@ class PollRoutes extends Utils{
             Utils.sendResponse(res, 500, `${e}`, req.originalUrl)
         }
     }
+
     static async vote(req, res){
         try{
+            const { ip } = req.body;
             const pollData = (await firebase.database().ref(req.params.id).once('value')).toJSON()
             pollData['options'] = Object.values(pollData['options'])
+            const voteType = pollData['voteType']
             let option = pollData['options'][Number(req.params.option)]
             if(!option){
                 return Utils.sendResponse(res, 401, 'Invalid option', req.originalUrl)
+            }
+            if(voteType === 'IP'){
+                if(!ip){
+                    return Utils.sendResponse(res, 404, 'IP not provided for IP protected poll', req.originalUrl)
+                }
+                if(pollData.voters[ip]){
+                    return Utils.sendResponse(res, 401, 'You have already voted', req.originalUrl)
+                }
+                const p = {}
+                p[ip] = option 
+                pollData.voters[ip] = { ...pollData.voters[ip], ...p }
             }
             pollData['votes'][`${option}`] += 1
             pollData['totalVotes'] += 1
@@ -73,9 +100,13 @@ class PollRoutes extends Utils{
             Utils.sendResponse(res, 500, `${e}`, req.originalUrl)
         }
     }
+    static getIp(req, res){
+        req.cookies['a']='sda'
+        res.send(req.cookies)
+    }
 }
 
 routes.post('/poll', PollRoutes.createPoll)
 routes.get('/vote/:id', PollRoutes.getPoll)
-routes.post('/vote/:id/:option', PollRoutes.vote)
+routes.get('/ip', PollRoutes.getIp)
 module.exports.routes = routes;
