@@ -1,0 +1,3 @@
+**/node_modules/**
+/live-voter-server/.env
+live-voter-server/.env

@@ -1,0 +1,109 @@
+.create-render{
+    width: 50%;
+    margin: auto;
+    padding: 27.5px;
+    font-family: sans-serif;
+    background-color: #FFF;
+    border-radius: 10px;
+    box-shadow: 0px 0px 8px 2px #666;
+}
+.create_header{
+    text-align: center;
+    font-weight: normal;
+}
+.create-header{
+    font-weight: 100;
+    text-align: center;
+}
+.standard-inp:focus{
+    outline: none;
+}
+.standard-inp{
+    width: 96%;
+    padding: 10px;
+    border-radius: 2.75px;
+    border: 1px solid #8883;
+    background-color: #88888824;
+    font-family: sans-serif;
+    font-size: 14px;
+}
+.poll-inp--header{
+    font-size: 18px;
+    padding-bottom: 10px;
+}
+.remove-option{
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    opacity: .75;
+    cursor: pointer;
+}
+.option-inp{
+    position: relative;
+}
+.option-inp:not(:last-child){
+    padding-bottom: 10px;
+}
+.create_poll-inp:not(:last-child){
+    padding: 7.5px 0;
+}
+.create-pol-submit{
+    padding-top: 20px;
+}
+.create-pol-submit>button:focus{
+    outline: none;
+}
+.create-pol-submit>button:hover{
+    transition: .2s;
+    box-shadow: 1px 1px 5px 1px blue;
+    background-color: #00378f;
+}
+.create-pol-submit>button{
+    transition: .2s;
+    cursor: pointer;
+    border: navajowhite;
+    padding: 10px;
+    width: 150px;
+    display: flex;
+    justify-content: center;
+    color: #FFF;
+    font-weight: bold;
+    background-color: #136cff;
+    font-size: 17px;
+}
+/* created-poll */
+.created-poll{
+    padding: 15px;
+    width: 350px;
+    align-items: center;
+    display: flex;
+    border-radius: 2.75px;
+    justify-content: space-between;
+}
+.success-icon{
+    display: flex;
+}
+.success-icon>svg{
+    color: green;
+    font-size: 25px;
+}
+.poll-msg{
+    font-weight: bold;
+    padding: 0 10px;
+    background-color: #FFF;
+    border: none;
+}
+.poll-copy-btn{
+    border: 1px solid #8885;
+    padding: 8px 15px;
+    font-weight: 500;
+    color: #FFF;
+    background-color: green;
+    border-radius: 2px;
+    cursor: pointer;
+}
+@media screen and (max-width: 650px){
+    .create-render{
+        width: 80%;
+    }
+}
