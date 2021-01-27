@@ -58,6 +58,9 @@ export function VoteStats({pollData, goBack, id}){
             console.log('NEW_VOTES', newPollData)
             setNewPollVotes(newPollData)
         })
+        return () => {
+            socketEvent.disconnect()
+        }
     },[])
     return (
         <div className="vote-poll">

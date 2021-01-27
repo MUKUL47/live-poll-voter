@@ -13,7 +13,7 @@ exports.socketController = (function(){
                 console.log('JOIN-',roomId)
                 audience.enterStage(roomId, socket.id)
             })
-            socket.on('disconnected', () => audience.leaveStage(roomId, socket.id))
+            socket.on('disconnect', () => audience.leaveStage(socket.id))
         })
         require('../server').listener.on('FROM_CONTROLLER', (roomId, votes) =>{
             const roomAudience = audience.getAudience(roomId);
@@ -34,7 +34,6 @@ class Audience{
         const r = {};
         r[roomId] = p
         this.roomData = {...this.roomData, ...r}
-        console.log('audience.roomData ',this.roomData)
     }
 
     enterStage(roomId, participant){
@@ -47,11 +46,22 @@ class Audience{
         this.roomData[roomId][participant] = { ...this.roomData[roomId], ...p }
     }
 
-    leaveStage(roomId, participant){
-        if(!this.roomData[roomId]) return;
-        delete this.roomData[roomId][participant]
-        if(Object.keys(this.roomData[roomId]).length === 0){
-            delete this.roomData[roomId]
+    leaveStage(participant){
+        console.log('LEAVE',participant)
+        let roomId;
+        for(let room in this.roomData){
+            if(this.roomData[room][participant]){
+                roomId = room;
+                break
+            }
+        }
+        console.log('audience ',this.roomId, this.roomData)
+        if(roomId){
+            delete this.roomData[roomId][participant]
+            if(Object.keys(this.roomData[roomId]).length === 0){
+                delete this.roomData[roomId]
+            }
+            console.log('audience.leaveStage ',this.roomData)
         }
     }
 
