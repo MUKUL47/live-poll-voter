@@ -81,6 +81,7 @@ function CreateRender({ submit, loading, resetCreateForm }) {
                                         className="standard-inp"
                                         value={o}
                                         onClick={() => optionClick(i)}
+                                        onFocus={() => optionClick(i)}
                                         onChange={e => optionChange(e, i)}
                                     />
                                     {
