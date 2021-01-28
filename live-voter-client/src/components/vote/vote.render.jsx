@@ -23,9 +23,9 @@ export function VotePoll({vote, showVote, pollData, voteStatus}) {
                     {
                         (pollData.options || []).map((option, i) => 
                         {
-                            return <div className="poll-option">
-                            <input key={i} type="radio" name="option" value="false" className="poll-check" onClick={() => setMyOption(i)}/>
-                            <div className="poll-option-ans">
+                            return <div className="poll-option" vote={i} key={i}>
+                            <input type="radio" name="option" value={myOption === i} className="poll-check" onClick={() => setMyOption(i)}/>
+                            <div className="poll-option-ans" onClick={()=>setMyOption(i)}>
                                 {option}
                             </div>
                         </div>
@@ -54,13 +54,8 @@ export function VoteStats({pollData, goBack, id}){
         socketEvent.on('connect_error', liveFeedFailed )
         socketEvent.on('connect_failed', liveFeedFailed)
         socketEvent.on('connect',() => socketEvent.emit('JOIN_AUDIENCE', id))
-        socketEvent.on('NEW_VOTES',newPollData => {
-            console.log('NEW_VOTES', newPollData)
-            setNewPollVotes(newPollData)
-        })
-        return () => {
-            socketEvent.disconnect()
-        }
+        socketEvent.on('NEW_VOTES',newPollData => setNewPollVotes(newPollData))
+        return () => socketEvent.disconnect()
     },[])
     return (
         <div className="vote-poll">
@@ -76,14 +71,16 @@ export function VoteStats({pollData, goBack, id}){
             </p>
             <div className="poll-votes">
                 {
-                    (Object.keys((newPollVotes || pollData).votes) || []).map(option => {
-                        return <div className="poll-option-block">
+                    (Object.keys((newPollVotes || pollData).votes) || []).map((option, i) => {
+                        let percent = (newPollVotes || pollData).votes[option]/(newPollVotes || pollData)['totalVotes'] * 100;
+                        percent = `${percent}` == 'NaN' ? 0 : percent;
+                        return <div className="poll-option-block" key={i}>
                         <div className="poll-option--progress">
                             <p>{option} ({(newPollVotes || pollData).votes[option]} votes)</p>
-                            {`${(((newPollVotes || pollData).votes[option]/(newPollVotes || pollData).totalVotes) * 100).toFixed(1)}%`}
+                            {`${percent.toFixed(1)}%`}
                         </div>
                         <div className="option-progress">
-                            <div id="option-progress" style={{width : `${(((newPollVotes || pollData).votes[option]/(newPollVotes || pollData).totalVotes) * 100).toFixed(1)}%` }}></div>
+                            <div id="option-progress" style={{width : `${(percent).toFixed(1)}%` }}></div>
                         </div>
                     </div>
                     })
@@ -95,7 +92,6 @@ export function VoteStats({pollData, goBack, id}){
 
             <div className="poll-actions">
                 <button className="vote-btn back-btn" onClick={goBack}>Back to Vote</button>
-                {/* <button className="show-vote-btn">Show Votes</button> */}
             </div>
         </div>
     </div>

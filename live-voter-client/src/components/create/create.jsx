@@ -11,6 +11,7 @@ function Create(props) {
         });
     const setContext = keyValue => setCreateContext({...createContext, ...keyValue})
     useEffect(()=>{
+        document.title = 'Live Poll | Create'
         if(createLocation.state && createLocation.state.alert){
             setTimeout(() => alert(createLocation.state.alert), 500)
         }

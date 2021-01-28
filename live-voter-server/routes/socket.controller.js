@@ -9,9 +9,7 @@ exports.socketController = (function(){
     return socketController;
     function startListening(audience){
         socketIo.on('connection', socket => {
-            socket.on('JOIN_AUDIENCE', roomId => {
-                audience.enterStage(roomId, socket.id)
-            })
+            socket.on('JOIN_AUDIENCE', roomId => audience.enterStage(roomId, socket.id))
             socket.on('disconnect', () => audience.leaveStage(socket.id))
         })
         require('../server').listener.on('FROM_CONTROLLER', (roomId, votes) =>{
@@ -42,7 +40,6 @@ class Audience{
         const p = {};
         p[participant] = participant
         this.roomData[roomId] = { ...this.roomData[roomId], ...p }
-        console.log(this.roomData)
     }
 
     leaveStage(participant){

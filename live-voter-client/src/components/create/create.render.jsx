@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createRef, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { CheckCircleIcon } from '../../utils/material.modules'
 import './create.css'
 function CreateRender({ submit, loading, resetCreateForm }) {
@@ -72,14 +72,14 @@ function CreateRender({ submit, loading, resetCreateForm }) {
                     
                         {
                             form.options.map((o, i) => {
-                                return <div className="pol-inp--val option-inp"> 
+                                return <div className="pol-inp--val option-inp" 
+                                key={i}> 
                                     <input 
                                         required ={i <= 1}
                                         type="text" 
                                         placeholder={`Enter Option ${i+1}`} 
                                         className="standard-inp"
                                         value={o}
-                                        key={i}
                                         onClick={() => optionClick(i)}
                                         onChange={e => optionChange(e, i)}
                                     />
@@ -97,7 +97,7 @@ function CreateRender({ submit, loading, resetCreateForm }) {
                        Vote Settings
                     </div>
                     <div className="pol-inp--val">
-                        <select name="" id="" className="standard-inp" onChange={e => setForm({ ...form, voteType :e.target.value })}>
+                        <select name="" id="" className="standard-inp select-type" onChange={e => setForm({ ...form, voteType :e.target.value })}>
                             <option value="IP">Unique IP</option>
                             <option value="COOKIE">Unique Browser session</option>
                         </select>

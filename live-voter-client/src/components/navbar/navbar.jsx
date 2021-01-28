@@ -1,24 +1,30 @@
 
 import React, { useState } from 'react'
-import Create from '../create/create';
-import Vote from '../vote/vote'
+import { useDispatch } from 'react-redux'
 import './navbar.css'
 import {
     useHistory
 } from "react-router-dom";
+import actions from '../../redux/actions';
 function NavBar(props) {
     const history = useHistory();
     const [votePoll, setVotePoll] = useState(false)
+    const dispatch = useDispatch()
     const toCreate = () => {
         history.push('/create')
     }
     const onModal = type => {
-        if(!type || type.trim().length === 0){
-            setVotePoll(false)
+        if(!type || type.trim().length === 0 || type.includes(' ') || type.includes('/')){
+            if(!type){
+                setVotePoll(false)
+            }else{
+                alert('Invalid poll ID')
+            }
             return;
         }
         setVotePoll(false)
         history.push('/vote/'+type)
+        dispatch({ type : actions.VOTE_POLL })
     }
     return (
         <div className="main">
@@ -43,7 +49,7 @@ function EnterPollIdTemplate({ onModal }){
     return <div className="overlay">
         <div className="overlay-div poll-template">
             <h2 className="enter-pollid">Enter Poll ID</h2>
-            <input focus={true}  type="text" className="poll-inp" value={pollId} onChange={e => setPollId(e.target.value)}/>
+            <input type="text" className="poll-inp" value={pollId} onChange={e => setPollId(e.target.value)}/>
             <div className="submit-poll-id">
                 <button onClick={() => onModal(pollId)} disabled={pollId.trim().length === 0}>Submit</button>
                 <div  onClick={() => onModal(false)}>Cancel</div>

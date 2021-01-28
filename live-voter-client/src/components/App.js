@@ -17,6 +17,7 @@ function App(){
                   <Route exact path='/create' component={Create}></Route>
                   <Route exact path='/vote/:id' component={Vote}></Route>
                   <Route exact path='/' ><Redirect to='/create'/></Route>
+                  <Route exact path='*/*' ><Redirect to='/create'/></Route>
               </Switch>
             </div>
       </BrowserRouter>

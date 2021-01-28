@@ -12,23 +12,11 @@ class Utils{
     static getRandomNumber(min, max){
         return Math.floor(Math.random() * (max - min) + min)
     }
-    static getIp(){
-        return new Promise((resolve, reject) => {
-            require('request').get('https://ipinfo.io', (err, resp, body) => {
-                if(err) {
-                    reject(err)
-                    return
-                }
-                resolve(JSON.parse(body)['ip'])
-            })
-        })
-    }
 }
 class PollRoutes extends Utils{
     static async createPoll(req, res){
         try{
             const { title, description, options, voteType } = req.body;
-            console.log(req.body)
             if(!title || !options){
                return Utils.sendResponse(res, 404, 'Title or options are missing', req.originalUrl)
             }
@@ -47,7 +35,7 @@ class PollRoutes extends Utils{
                 totalVotes : 0,
                 createdAt : new Date().valueOf(),
                 voteType : voteType || 'IP',
-                voters : {}
+                voters : ['_']
             };
             await firebase.database().ref().update(obj);
             Utils.sendResponse(res, 201, pollId, req.originalUrl)
@@ -70,12 +58,10 @@ class PollRoutes extends Utils{
                 if(!ip){
                     return Utils.sendResponse(res, 404, 'IP not provided for IP protected poll', req.originalUrl)
                 }
-                if(pollData.voters[ip]){
+                if(pollData.voters && Object.values(pollData.voters).find(i => i == ip)){
                     return Utils.sendResponse(res, 401, 'You have already voted', req.originalUrl)
                 }
-                const p = {}
-                p[ip] = option 
-                pollData.voters[ip] = { ...pollData.voters[ip], ...p }
+                pollData['voters'] = [ip, ...Object.values(pollData.voters)] 
             }
             pollData['votes'][`${option}`] += 1
             pollData['totalVotes'] += 1
@@ -83,7 +69,7 @@ class PollRoutes extends Utils{
             newPoll[req.params.id] = pollData
             await firebase.database().ref().update(newPoll);
             require('../server').listener.emit('FROM_CONTROLLER', req.params.id, pollData)
-            Utils.sendResponse(res, 201, pollData, req.originalUrl)
+            Utils.sendResponse(res, 200, pollData, req.originalUrl)
         }catch(e){
             Utils.sendResponse(res, 500, `${e}`, req.originalUrl)
         }
@@ -100,13 +86,9 @@ class PollRoutes extends Utils{
             Utils.sendResponse(res, 500, `${e}`, req.originalUrl)
         }
     }
-    static getIp(req, res){
-        req.cookies['a']='sda'
-        res.send(req.cookies)
-    }
 }
 
 routes.post('/poll', PollRoutes.createPoll)
 routes.get('/vote/:id', PollRoutes.getPoll)
-routes.get('/ip', PollRoutes.getIp)
+routes.post('/vote/:id/:option', PollRoutes.vote)
 module.exports.routes = routes;

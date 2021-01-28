@@ -1,4 +1,4 @@
 const actions =  {
-    TEST : 'TEST'
+    VOTE_POLL : 'VOTE_POLL'
 }
 export default actions

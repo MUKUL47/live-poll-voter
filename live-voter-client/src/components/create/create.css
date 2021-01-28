@@ -1,5 +1,5 @@
 .create-render{
-    width: 50%;
+    width: 580px;
     margin: auto;
     padding: 27.5px;
     font-family: sans-serif;
@@ -26,6 +26,9 @@
     background-color: #88888824;
     font-family: sans-serif;
     font-size: 14px;
+}
+.select-type{
+    width: 100%;
 }
 .poll-inp--header{
     font-size: 18px;
