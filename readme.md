@@ -11,4 +11,4 @@
 ```
 
 ## Demo
-![Demo](https://github.com/MUKUL47/MultiplayerTypingTest/blob/master/typeracer-client/public/typeracer-demo.gif "Title")
+![Demo](https://github.com/MUKUL47/live-poll/blob/main/live-voter-client/public/demo.gif "Title")
